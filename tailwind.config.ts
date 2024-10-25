@@ -17,7 +17,7 @@ const config: Config = {
           sm: '100%',
           md: '100%',
           lg: '100%',
-          xl: '1200px'
+          xl: '1280px'
         }
       },
       fontFamily: {
