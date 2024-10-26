@@ -1,3 +1,8 @@
+import { env } from "./env/server"
+
+export type TierNames = keyof typeof subscriptionTiers
+export type PaidTierNames = Exclude<TierNames, "Free">
+
 export const subscriptionTiers = {
     Free: {
         name: "Free",
@@ -47,3 +52,9 @@ export const subscriptionTiersInOrder = [
     subscriptionTiers.Standard,
     subscriptionTiers.Premium,
 ] as const
+
+// export function getTierByPriceId(stripePriceId: string) {
+//     return Object.values(subscriptionTiers).find(
+//         tier => tier.stripePriceId === stripePriceId
+//     )
+// }
