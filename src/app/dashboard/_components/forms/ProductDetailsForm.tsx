@@ -8,9 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { productDetailsSchema } from "@/schemas/products";
+import { createProduct } from "@/server/actions/products";
+import { useToast } from "@/hooks/use-toast";
 
 export function ProductDetailsForm() {
 
+    const { toast } = useToast()
     const form = useForm<z.infer<typeof productDetailsSchema>>({
         resolver: zodResolver(productDetailsSchema),
         defaultValues: {
@@ -20,8 +23,15 @@ export function ProductDetailsForm() {
         },
     })
 
-    function onSubmit(values: z.infer<typeof productDetailsSchema>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof productDetailsSchema>) {
+        const data = await createProduct(values)
+        if (data?.message) {
+            toast({
+                title: data?.error ? 'Error' : 'Success',
+                description: data?.message,
+                variant: data?.error ? 'destructive' : 'default'
+            })
+        }
     }
 
     return (
