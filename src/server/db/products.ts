@@ -1,7 +1,8 @@
 import { db } from "@/drizzle/db";
-import { ProductCustomizationTable, ProductTable } from "@/drizzle/schema";
+import { CountryGroupDiscountTable, ProductCustomizationTable, ProductTable } from "@/drizzle/schema";
 import { CACHE_TAGS, dbCache, getGlobalTag, getIdTag, getUserTag, revalidateDbCache } from "@/lib/cache";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
+import { BatchItem } from "drizzle-orm/batch";
 
 export async function getProductCountryGroups({ productId, userId }: { productId: string, userId: string }) {
     const cacheFn = dbCache(getProductCountryGroupsInternal, {
@@ -75,6 +76,44 @@ export async function updateProduct(data: Partial<typeof ProductTable.$inferInse
     }
 
     return rowCount > 0
+}
+
+export async function updateCountryDiscounts(
+    deleteGroup: { countryGroupId: string }[],
+    insertGroup: (typeof CountryGroupDiscountTable.$inferInsert)[],
+    { productId, userId }: { productId: string, userId: string }
+) {
+    const product = await getProduct({ id: productId, userId })
+    if (product == null) return false
+
+    const statements: BatchItem<"pg">[] = []
+
+    if (deleteGroup.length > 0) {
+        statements.push(db.delete(CountryGroupDiscountTable).where(and(eq(CountryGroupDiscountTable.productId, productId), inArray(CountryGroupDiscountTable.countryGroupId, deleteGroup?.map(group => group.countryGroupId)))))
+    }
+
+    if (insertGroup.length > 0) {
+        statements.push(db.insert(CountryGroupDiscountTable).values(insertGroup).onConflictDoUpdate({
+            target: [
+                CountryGroupDiscountTable.productId,
+                CountryGroupDiscountTable.countryGroupId
+            ],
+            set: {
+                coupon: sql.raw(`exculded.${CountryGroupDiscountTable.coupon.name}`),
+                discountPercentage: sql.raw(`exculded.${CountryGroupDiscountTable.discountPercentage.name}`)
+            }
+        }))
+    }
+
+    if (statements.length > 0) {
+        await db.batch(statements as [BatchItem<"pg">])
+    }
+
+    revalidateDbCache({
+        tag: CACHE_TAGS.products,
+        userId,
+        id: productId
+    })
 }
 
 async function getProductCountryGroupsInternal({ productId, userId }: { productId: string; userId: string }) {
