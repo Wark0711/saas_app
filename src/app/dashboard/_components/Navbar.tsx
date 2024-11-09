@@ -11,7 +11,7 @@ export function Nabvar() {
                 </Link>
                 <Link href={'/dashboard/products'}>Products</Link>
                 <Link href={'/dashboard/analytics'}>Analytics</Link>
-                <Link href={'/dashboadr/subscription'}>Subscription</Link>
+                <Link href={'/dashboard/subscription'}>Subscription</Link>
                 <UserButton />
             </nav>
         </header>
