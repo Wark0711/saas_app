@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { productDetailsSchema } from "@/schemas/products";
 import { createProduct, updateProduct } from "@/server/actions/products";
 import { useToast } from "@/hooks/use-toast";
+import { RequiredLabelIcon } from "@/components/RequiredLabelIcon";
 
 export function ProductDetailsForm({ product }: {
-    product: {
+    product?: {
         id: string
         name: string
         description: string | null
@@ -57,7 +58,7 @@ export function ProductDetailsForm({ product }: {
                             name={'name'}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Product Name</FormLabel>
+                                    <FormLabel>Product Name <RequiredLabelIcon /></FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -70,7 +71,7 @@ export function ProductDetailsForm({ product }: {
                             name={'url'}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Enter your website URL</FormLabel>
+                                    <FormLabel>Enter your website URL <RequiredLabelIcon /></FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
