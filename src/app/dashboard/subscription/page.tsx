@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress"
 import { TierNames, subscriptionTiers, subscriptionTiersInOrder } from "@/data/subscriptionTiers"
 import { formatCompactNumber } from "@/lib/formatters"
 import { cn } from "@/lib/utils"
+import { createCancelSession, createCheckoutSession, createCustomerPortalSession } from "@/server/actions/stripe"
 import { getProductViewCount } from "@/server/db/productViews"
 import { getProductCount } from "@/server/db/products"
 import { getUserSubscriptionTier } from "@/server/db/subscritpion"
@@ -49,16 +50,16 @@ export default async function SubscriptionPage() {
                 </Card>
             </div>
             {
-                tier == subscriptionTiers.Free
+                tier != subscriptionTiers.Free
                     ? <Card>
                         <CardHeader>
                             <CardTitle>You are currently on {tier.name} plan</CardTitle>
                             <CardDescription>If you would like to upgrade, cancel or changeyour payment method use the button below.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {/* <form action={createCustomerPortalSession}>
+                            <form action={createCustomerPortalSession}>
                                 <Button variant={'accent'} className="text-lg rounded-lg" size={'lg'}>Manage Subscription</Button>
-                            </form> */}
+                            </form>
                         </CardContent>
                     </Card>
                     : <></>
@@ -98,13 +99,7 @@ function PricingCard({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form
-                    // action={
-                    //     name === "Free"
-                    //         ? createCancelSession
-                    //         : createCheckoutSession.bind(null, name)
-                    // }
-                >
+                <form action={name === "Free" ? createCancelSession : createCheckoutSession.bind(null, name)}>
                     <Button
                         disabled={isCurrent}
                         className="text-lg w-full rounded-lg bg-accent"
