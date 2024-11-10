@@ -4,7 +4,10 @@ import { WebhookEvent } from '@clerk/nextjs/server'
 import { env } from '@/data/env/server'
 import { db } from '@/drizzle/db'
 import { UserSubscriptionTable } from '@/drizzle/schema'
-import { createUserSubscritpion, deleteUser } from '@/server/db/subscritpion'
+import { createUserSubscritpion, deleteUser, getUserSubscription } from '@/server/db/subscritpion'
+import Stripe from 'stripe'
+
+const stripe = new Stripe(env.STRIPE_SECRET_KEY)
 
 export async function POST(req: Request) {
     // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
@@ -53,6 +56,10 @@ export async function POST(req: Request) {
         }
         case "user.deleted": {
             if (evt.data.id != null) {
+                const userSubscription = await getUserSubscription(evt.data.id)
+                if (userSubscription?.stripeSubscriptionId != null) {
+                    await stripe.subscriptions.cancel(userSubscription?.stripeSubscriptionId)
+                }
                 await deleteUser(evt.data.id)
             }
         }
