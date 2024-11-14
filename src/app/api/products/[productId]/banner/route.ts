@@ -8,6 +8,8 @@ import { notFound } from "next/navigation";
 import { NextRequest } from "next/server";
 import { createElement } from "react";
 
+export const runtime = 'edge'
+
 export async function GET(
     request: NextRequest,
     { params: { productId } }: { params: { productId: string } }
@@ -24,8 +26,6 @@ export async function GET(
         countryCode,
         url: requestingUrl
     })
-
-    console.log(discount, country);
 
     if (product == null) return notFound()
 

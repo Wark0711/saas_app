@@ -88,6 +88,7 @@ export function ProductCustomizationForm({ customization, canCustomizeBanner, ca
                                             {...field}
                                         />
                                     </FormControl>
+                                    <FormMessage />
                                     <FormDescription>{"Data Parameters: {country}, {coupon}, {discount}"}</FormDescription>
                                 </FormItem>
                             )}
