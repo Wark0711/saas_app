@@ -1,6 +1,7 @@
 import { db } from "@/drizzle/db";
 import { CountryGroupDiscountTable, ProductCustomizationTable, ProductTable } from "@/drizzle/schema";
 import { CACHE_TAGS, dbCache, getGlobalTag, getIdTag, getUserTag, revalidateDbCache } from "@/lib/cache";
+import { removeTrailingSlash } from "@/lib/utils";
 import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { BatchItem } from "drizzle-orm/batch";
 
@@ -98,7 +99,7 @@ export async function updateProduct(data: Partial<typeof ProductTable.$inferInse
 export async function updateCountryDiscounts(
     deleteGroup: { countryGroupId: string }[],
     insertGroup: (typeof CountryGroupDiscountTable.$inferInsert)[],
-    { productId, userId }: { productId: string, userId: string }
+    { productId, userId }: { productId: string; userId: string }
 ) {
     const product = await getProduct({ id: productId, userId })
     if (product == null) return false
@@ -106,7 +107,7 @@ export async function updateCountryDiscounts(
     const statements: BatchItem<"pg">[] = []
 
     if (deleteGroup.length > 0) {
-        statements.push(db.delete(CountryGroupDiscountTable).where(and(eq(CountryGroupDiscountTable.productId, productId), inArray(CountryGroupDiscountTable.countryGroupId, deleteGroup?.map(group => group.countryGroupId)))))
+        statements.push(db.delete(CountryGroupDiscountTable).where(and(eq(CountryGroupDiscountTable.productId, productId), inArray(CountryGroupDiscountTable.countryGroupId, deleteGroup.map(group => group.countryGroupId)))))
     }
 
     if (insertGroup.length > 0) {
@@ -116,8 +117,8 @@ export async function updateCountryDiscounts(
                 CountryGroupDiscountTable.countryGroupId
             ],
             set: {
-                coupon: sql.raw(`exculded.${CountryGroupDiscountTable.coupon.name}`),
-                discountPercentage: sql.raw(`exculded.${CountryGroupDiscountTable.discountPercentage.name}`)
+                coupon: sql.raw(`excluded.${CountryGroupDiscountTable.coupon.name}`),
+                discountPercentage: sql.raw(`excluded.${CountryGroupDiscountTable.discountPercentage.name}`)
             }
         }))
     }
@@ -129,7 +130,7 @@ export async function updateCountryDiscounts(
     revalidateDbCache({
         tag: CACHE_TAGS.products,
         userId,
-        id: productId
+        id: productId,
     })
 }
 
@@ -143,6 +144,26 @@ export async function updateProductCustomization(data: Partial<typeof ProductCus
         tag: CACHE_TAGS.products,
         userId,
         id: productId
+    })
+}
+
+export async function getProductForBanner({ id, countryCode, url }: {
+    id: string
+    countryCode: string,
+    url: string
+}) {
+    const cacheFn = dbCache(getProductForBannerInternal, {
+        tags: [
+            getIdTag(id, CACHE_TAGS.products),
+            getGlobalTag(CACHE_TAGS.countries),
+            getGlobalTag(CACHE_TAGS.countryGroups),
+        ],
+    })
+
+    return cacheFn({
+        id,
+        countryCode,
+        url,
     })
 }
 
@@ -209,4 +230,67 @@ function getProductInternal({ id, userId }: { id: string; userId: string }) {
 async function getProductCountInternal(userId: string) {
     const counts = await db.select({ productCount: count() }).from(ProductTable).where(eq(ProductTable.clerkUserId, userId))
     return counts?.at(0)?.productCount ?? 0
+}
+
+async function getProductForBannerInternal({ id, countryCode, url }: {
+    id: string
+    countryCode: string
+    url: string
+}) {
+    const data = await db.query.ProductTable.findFirst({
+        where: ({ id: idCol, url: urlCol }, { eq, and }) =>
+            and(eq(idCol, id), eq(urlCol, removeTrailingSlash(url))),
+        columns: {
+            id: true,
+            clerkUserId: true,
+        },
+        with: {
+            productCustomization: true,
+            countryGroupDiscounts: {
+                columns: {
+                    coupon: true,
+                    discountPercentage: true,
+                },
+                with: {
+                    countryGroup: {
+                        columns: {},
+                        with: {
+                            countries: {
+                                columns: {
+                                    id: true,
+                                    name: true,
+                                },
+                                limit: 1,
+                                where: ({ code }, { eq }) => eq(code, countryCode),
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    })
+    
+    const discount = data?.countryGroupDiscounts.find(
+        discount => discount.countryGroup.countries.length > 0
+    )
+    const country = discount?.countryGroup.countries[0]
+    const product = data == null || data.productCustomization == null
+        ? undefined
+        : {
+            id: data.id,
+            clerkUserId: data.clerkUserId,
+            customization: data.productCustomization,
+        }
+
+    return {
+        product,
+        country,
+        discount:
+            discount == null
+                ? undefined
+                : {
+                    coupon: discount.coupon,
+                    percentage: discount.discountPercentage,
+                },
+    }
 }

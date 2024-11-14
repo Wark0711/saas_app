@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.0.1",
+    "@date-fns/tz": "^1.2.0",
     "@hookform/resolvers": "^3.9.0",
     "@neondatabase/serverless": "^0.10.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
@@ -38,6 +39,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.1",
+    "recharts": "^2.13.3",
     "stripe": "^17.3.1",
     "svix": "^1.37.0",
     "tailwind-merge": "^2.5.4",
