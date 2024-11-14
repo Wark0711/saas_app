@@ -30,11 +30,11 @@ export default async function EditProductPage({
                 <Tabs defaultValue={tab}>
                     <TabsList className="bg-background/60">
                         <TabsTrigger value="details">Details</TabsTrigger>
-                        <TabsTrigger value="country">Country</TabsTrigger>
+                        <TabsTrigger value="countries">Country</TabsTrigger>
                         <TabsTrigger value="customization">Customization</TabsTrigger>
                     </TabsList>
                     <TabsContent value="details"><DetailsTab product={product} /></TabsContent>
-                    <TabsContent value="country"><CountryTab productId={productId} userId={userId} /></TabsContent>
+                    <TabsContent value="countries"><CountryTab productId={productId} userId={userId} /></TabsContent>
                     <TabsContent value="customization"><CustomizationsTab productId={productId} userId={userId} /></TabsContent>
                 </Tabs>
             </PageWithBackButton>
