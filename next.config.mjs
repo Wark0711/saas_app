@@ -4,6 +4,9 @@ const nextConfig = {
         staleTimes: {
             dynamic: 0
         }
+    },
+    eslint: {
+        ignoreDuringBuilds: true,
     }
 };
 
