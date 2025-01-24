@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { SignUpButton } from "@clerk/nextjs";
 import { ArrowRightIcon, CheckIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { NeonIcon } from "./_icons/Neon";
 import { ClerkIcon } from "./_icons/Clerk";
-import { subscriptionTiers, subscriptionTiersInOrder } from "@/data/subscriptionTiers";
+import { subscriptionTiersInOrder } from "@/data/subscriptionTiers";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCompactNumber } from "@/lib/formatters";
 import { ReactNode } from "react";

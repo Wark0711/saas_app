@@ -4,7 +4,6 @@ import { ProductCustomizationForm } from "@/app/dashboard/_components/forms/Prod
 import { ProductDetailsForm } from "@/app/dashboard/_components/forms/ProductDetailsForm"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { clearFullCache } from "@/lib/cache"
 import { getProduct, getProductCountryGroups, getProductCustomization } from "@/server/db/products"
 import { canCustomizeBanner, canRemoveBranding } from "@/server/permissions"
 import { auth } from "@clerk/nextjs/server"
