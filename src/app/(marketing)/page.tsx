@@ -63,7 +63,7 @@ export default function HomePage() {
       </section>
       <section id="pricing" className="px-8 py-16 bg-accent/5">
         <h2 className="text-4xl text-center text-balance font-semibold mb-8">Pricing software which pays for itself 20x over</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-xl mx-auto">
           {
             subscriptionTiersInOrder.map(tier => (
               <PricingCard key={tier.name} {...tier} />
@@ -72,10 +72,13 @@ export default function HomePage() {
         </div>
       </section>
       <footer className="container pt-16 pb-8 flex flex-col sm:flex-row gap-8 sm:gap-4 justify-between items-start">
-        <Link href={'/'}>
-          <BrandLogo />
-        </Link>
-        <div className="flex flex-col sm:flex-row gap-8">
+        <div>
+          <Link href={'/'}>
+            <BrandLogo />
+          </Link>
+          <p className="max-w-screen-sm pt-5 pl-1">Optimize your product procing across countries to maximize sales. Capture 85% of the untapped market with location based dynamic pricing.</p>
+        </div>
+        <div className="flex flex-wrap w-full sm:w-auto sm:flex-row gap-8 items-center justify-between sm:justify-start">
           <div className="flex flex-col gap-8">
             <FooterLinkGroup
               title={'Help'}

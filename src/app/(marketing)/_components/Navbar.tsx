@@ -9,13 +9,13 @@ export function Navbar() {
                 <Link href='/' className="mr-auto">
                     <BrandLogo />
                 </Link>
-                <Link href='/' className="text-lg">
+                <Link href='/' className="text-lg hidden md:inline">
                     Features
                 </Link>
-                <Link href='/' className="text-lg">
+                <Link href='#pricing' className="text-lg hidden md:inline">
                     Pricing
                 </Link>
-                <Link href='/' className="text-lg">
+                <Link href='/' className="text-lg hidden md:inline">
                     About
                 </Link>
                 <span className="text-lg">

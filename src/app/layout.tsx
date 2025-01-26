@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Easy PPP",
+  title: "Simple PPP",
   description: "Capture 85% of the untapped market with location based dynamic pricing.",
 };
 
@@ -28,9 +28,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans bg-background`}
-        >
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans bg-background`}>
           {children}
           <Toaster />
         </body>
