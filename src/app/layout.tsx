@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Easy PPP",
+  title: "Simple PPP",
   description: "Capture 85% of the untapped market with location based dynamic pricing.",
 };
 
